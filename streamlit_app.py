@@ -8,7 +8,7 @@ st.write("Choose your fruits for your smoothie")
 name_of_order = st.text_input("Name of Smoothie")
 st.write("The name of the smoothie will be:", name_of_order)
 
-
+session = get_active_session()
 # Fetch data
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
 
