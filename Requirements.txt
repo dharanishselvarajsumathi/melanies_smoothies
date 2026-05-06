@@ -1,8 +1,2 @@
-[project]
-name = "melanies_smoothies"
-version = "0.1.0"
-
-dependencies = [
-    "streamlit",
-    "snowflake-snowpark-python"
-]
+snowflake-snowpark-python
+streamlit
