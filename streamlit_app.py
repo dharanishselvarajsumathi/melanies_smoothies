@@ -1,5 +1,7 @@
 # Import python packages.
 import streamlit as st
+from snowflake.snowpark.context import get_active_session
+from snowflake.snowpark.functions import col
 # Title
 st.title(f"Customize Your Smoothie 🥤 {st.__version__}")
 st.write("Choose your fruits for your smoothie")
