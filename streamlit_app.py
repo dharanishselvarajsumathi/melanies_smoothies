@@ -94,9 +94,9 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
 
         # Build ingredient string
-        ingredients_string += (
-            fruit_chosen + ", "
-        )
+        ingredients_string += 
+            fruit_chosen + ' '
+        
 
         # -----------------------------------
         # GET SEARCH VALUE
@@ -112,7 +112,7 @@ if ingredients_list:
         # -----------------------------------
 
         st.subheader(
-            f"{fruit_chosen} Nutrition Information"
+            fruit_chosen+ 'Nutrition Information'
         )
 
         # -----------------------------------
@@ -127,7 +127,7 @@ if ingredients_list:
         # SHOW DATA
         # -----------------------------------
 
-        st.dataframe(
+        sf_df=st.dataframe(
             data=smoothiefroot_response.json(),
             use_container_width=True
         )
