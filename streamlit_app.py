@@ -15,11 +15,13 @@ name_on_order = st.text_input('Name on Smoothie:')
 
 st.write('The name on your Smoothie will be:', name_on_order)
 
-my_dataframe = session.table("SMOOTHIES.PUBLIC.FRUIT_OPTIONS")
+fruit_rows = session.table("SMOOTHIES.PUBLIC.FRUIT_OPTIONS").collect()
+
+fruit_list = [row["FRUIT_NAME"] for row in fruit_rows]
 
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:',
-    my_dataframe,
+    fruit_list,
     max_selections=5
 )
 
