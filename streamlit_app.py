@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # Title
-st.title(f"Customize Your Smoothie 🥤")
+st.title("Customize Your Smoothie 🥤")
 st.write("Choose your fruits for your smoothie")
 
 # User input
@@ -40,27 +40,34 @@ options = st.multiselect(
 # If fruits selected
 if options:
 
-    # Convert list to string
-    fruit_string = ", ".join(options)
+    ingredients_string = ""
 
-    # Show selected fruits
-    st.write("Your smoothie ingredients:", fruit_string)
+    # Loop through each selected fruit
+    for fruit_chosen in options:
 
-    # Take first selected fruit for API call
-    fruit_choice = options[0].lower()
+        ingredients_string += fruit_chosen + " "
 
-    # Fetch nutrition data from API
-    smoothiefroot_response = requests.get(
-        f"https://my.smoothiefroot.com/api/fruit/{fruit_choice}"
-    )
+        st.subheader(f"{fruit_chosen} Nutrition Information")
 
-    # Show nutrition dataframe
-    st.subheader(f"{fruit_choice.title()} Nutrition Information")
+        # API request
+        smoothiefroot_response = requests.get(
+            f"https://my.smoothiefroot.com/api/fruit/{fruit_chosen.lower()}"
+        )
 
-    st.dataframe(
-        data=smoothiefroot_response.json(),
-        use_container_width=True
-    )
+        # If fruit exists in API
+        if smoothiefroot_response.status_code == 200:
+
+            st.dataframe(
+                data=smoothiefroot_response.json(),
+                use_container_width=True
+            )
+
+        # If fruit not found
+        else:
+            st.warning(f"{fruit_chosen} not found in Smoothiefroot API")
+
+    # Show ingredient string
+    st.write("Your smoothie ingredients:", ingredients_string)
 
 # Place order button
 if st.button("Place Order"):
@@ -84,7 +91,7 @@ if st.button("Place Order"):
         # Execute insert
         session.sql(
             insert_sql,
-            params=[fruit_string, name_of_order]
+            params=[ingredients_string, name_of_order]
         ).collect()
 
         # Success message
