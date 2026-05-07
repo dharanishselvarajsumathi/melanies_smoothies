@@ -199,25 +199,33 @@ if st.button("Place Order"):
             # -----------------------------------
             # INSERT ORDER
             # -----------------------------------
-
             insert_sql = """
             INSERT INTO smoothies.public.orders
             (
                 ingredients,
-                name_on_order
+                name_on_order,
+                order_filled,
+                order_ts
             )
             VALUES
             (
                 ?,
-                ?
+                ?,
+                ?,
+                CURRENT_TIMESTAMP()
             )
             """
 
+            # Default filled status
+            filled_status = False
+
+            # Execute insert
             session.sql(
                 insert_sql,
                 params=[
                     ingredients_string[:-2],
-                    name_of_order
+                    name_of_order,
+                    filled_status
                 ]
             ).collect()
 
