@@ -18,9 +18,6 @@ st.write('The name on your Smoothie will be:', name_on_order)
 
 my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'), col('SEARCH_ON'))
 
-# Convert to pandas so multiselect can iterate over it
-pd_df = my_dataframe.to_pandas()
-
 ingredients_list = st.multiselect(
     'Choose up to 5 ingredients:',
     pd_df['FRUIT_NAME'].tolist(),
