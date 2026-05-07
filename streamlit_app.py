@@ -115,51 +115,22 @@ if ingredients_list:
             f"{fruit_chosen} Nutrition Information"
         )
 
-        try:
-
-            # -----------------------------------
-            # API REQUEST
-            # -----------------------------------
-
-            smoothiefroot_response = requests.get(
-                f"https://my.smoothiefroot.com/api/fruit/{search_on}"
-            )
-
-            # -----------------------------------
-            # SUCCESSFUL RESPONSE
-            # -----------------------------------
-
-            if smoothiefroot_response.status_code == 200:
-
-                fruit_data = (
-                    smoothiefroot_response
-                    .json()
-                )
-
-                st.dataframe(
-                    data=fruit_data,
-                    use_container_width=True
-                )
-
-            # -----------------------------------
-            # API FAILED
-            # -----------------------------------
-
-            else:
-
-                st.warning(
-                    f"{fruit_chosen} not found in Smoothiefroot API"
-                )
-
         # -----------------------------------
-        # REQUEST ERROR
+        # API REQUEST
         # -----------------------------------
 
-        except Exception as e:
+        smoothiefroot_response = requests.get(
+            f"https://my.smoothiefroot.com/api/fruit/{search_on}"
+        )
 
-            st.error(
-                f"API Error: {e}"
-            )
+        # -----------------------------------
+        # SHOW DATA
+        # -----------------------------------
+
+        st.dataframe(
+            data=smoothiefroot_response.json(),
+            use_container_width=True
+        )
 
     # -----------------------------------
     # SHOW FINAL INGREDIENTS
@@ -176,73 +147,32 @@ if ingredients_list:
 
 if st.button("Place Order"):
 
-    # -----------------------------------
-    # VALIDATION
-    # -----------------------------------
+    insert_sql = """
+    INSERT INTO smoothies.public.orders
+    (
+        ingredients,
+        name_on_order,
+        order_filled,
+        order_ts
+    )
+    VALUES
+    (
+        ?,
+        ?,
+        ?,
+        CURRENT_TIMESTAMP()
+    )
+    """
 
-    if not name_of_order:
+    session.sql(
+        insert_sql,
+        params=[
+            ingredients_string[:-2],
+            name_of_order,
+            False
+        ]
+    ).collect()
 
-        st.error(
-            "Please enter a smoothie name."
-        )
-
-    elif not ingredients_list:
-
-        st.error(
-            "Please choose at least one fruit."
-        )
-
-    else:
-
-        try:
-
-            # -----------------------------------
-            # INSERT ORDER
-            # -----------------------------------
-            insert_sql = """
-            INSERT INTO smoothies.public.orders
-            (
-                ingredients,
-                name_on_order,
-                order_filled,
-                order_ts
-            )
-            VALUES
-            (
-                ?,
-                ?,
-                ?,
-                CURRENT_TIMESTAMP()
-            )
-            """
-
-            # Default filled status
-            filled_status = False
-
-            # Execute insert
-            session.sql(
-                insert_sql,
-                params=[
-                    ingredients_string[:-2],
-                    name_of_order,
-                    filled_status
-                ]
-            ).collect()
-
-            # -----------------------------------
-            # SUCCESS MESSAGE
-            # -----------------------------------
-
-            st.success(
-                "Your Smoothie is ordered! ✅"
-            )
-
-        # -----------------------------------
-        # DATABASE ERROR
-        # -----------------------------------
-
-        except Exception as e:
-
-            st.error(
-                f"Database Error: {e}"
-            )
+    st.success(
+        "Your Smoothie is ordered! ✅"
+    )
