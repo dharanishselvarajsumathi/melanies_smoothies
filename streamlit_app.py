@@ -82,71 +82,31 @@ ingredients_list = st.multiselect(
 # -----------------------------------
 # IF USER SELECTS FRUITS
 # -----------------------------------
-
 if ingredients_list:
-
-    ingredients_string = ""
-
-    # -----------------------------------
-    # LOOP THROUGH EACH FRUIT
-    # -----------------------------------
-
+    # Build clean ingredients string
+    ingredients_string = ", ".join(ingredients_list)
+    
     for fruit_chosen in ingredients_list:
-
-        # Build ingredient string
-        ingredients_string += (
-            fruit_chosen + ", "
-        )
-
-        # -----------------------------------
-        # GET SEARCH VALUE
-        # -----------------------------------
-
         search_on = pd_df.loc[
             pd_df["FRUIT_NAME"] == fruit_chosen,
             "SEARCH_ON"
         ].iloc[0]
-
-        # -----------------------------------
-        # SHOW SECTION TITLE
-        # -----------------------------------
-
-        st.subheader(
-            f"{fruit_chosen} Nutrition Information"
-        )
-
-        # -----------------------------------
-        # API REQUEST
-        # -----------------------------------
-
+        
+        st.subheader(f"{fruit_chosen} Nutrition Information")
         smoothiefroot_response = requests.get(
             f"https://my.smoothiefroot.com/api/fruit/{search_on}"
         )
-
-        # -----------------------------------
-        # SHOW DATA
-        # -----------------------------------
-
         st.dataframe(
             data=smoothiefroot_response.json(),
             use_container_width=True
         )
-
-    # -----------------------------------
-    # SHOW FINAL INGREDIENTS
-    # -----------------------------------
-
-    st.write(
-        "Your smoothie ingredients:",
-        ingredients_string[:-2]
-    )
-
+    
+    st.write("Your smoothie ingredients:", ingredients_string)
 # -----------------------------------
 # PLACE ORDER BUTTON
 # -----------------------------------
 
 if st.button("Place Order"):
-
     insert_sql = """
     INSERT INTO smoothies.public.orders
     (
@@ -163,16 +123,14 @@ if st.button("Place Order"):
         CURRENT_TIMESTAMP()
     )
     """
-
     session.sql(
         insert_sql,
         params=[
-            ingredients_string[:-2],
+            ingredients_string,  # ✅ fixed
             name_of_order,
             False
         ]
     ).collect()
-
     st.success(
         "Your Smoothie is ordered! ✅"
     )
