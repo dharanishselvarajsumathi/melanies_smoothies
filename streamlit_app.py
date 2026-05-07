@@ -62,4 +62,4 @@ if st.button("Place Order"):
 
 import requests  
 requests.get("https://my.smoothiefroot.com/api/fruit/watermelon") 
-st.text(smoothiefroot_response)
+st.write(smoothiefroot_response.json())
